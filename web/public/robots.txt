@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://agentbrain.autoincomesys.com/sitemap.xml
