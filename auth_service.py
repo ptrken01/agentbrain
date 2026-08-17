@@ -3,6 +3,7 @@ AgentBrain Auth Service — Subscription & API Key Management
 Uses pg8000 (pure Python PostgreSQL driver) for reliability
 """
 import os
+from datetime import datetime
 import json
 import hashlib
 import secrets
