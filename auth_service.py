@@ -188,6 +188,23 @@ async def verify(api_key: str = Header(..., alias="api-key")):
         "features": get_tier_features(user["tier"])
     }
 
+@app.post("/auth/recover")
+async def recover(request: Request):
+    """Get API key by email (for users created via Stripe webhook)"""
+    data = await request.json()
+    email = data.get("email", "")
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("SELECT api_key, tier FROM users WHERE email = %s", (email,))
+    columns = [desc[0] for desc in cur.description]
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+    if not row:
+        raise HTTPException(status_code=404, detail="User not found")
+    user = dict(zip(columns, row))
+    return {"api_key": user["api_key"], "tier": user["tier"]}
+
 @app.post("/webhooks/stripe")
 async def stripe_webhook(request: Request):
     payload = await request.body()
