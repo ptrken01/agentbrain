@@ -73,3 +73,32 @@ Just like Google owns the index, Stripe owns the payment rail, and AWS owns the 
 ---
 
 Built with ❤️ by the SecondBrain team.
+
+## 🚀 Deploy
+
+### Deploy Auth Service to Render (Free)
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/ptrken01/agentbrain)
+
+1. Click the button above
+2. Set the environment variables:
+   - `STRIPE_SECRET_KEY`: Your Stripe secret key
+   - `STRIPE_WEBHOOK_SECRET`: From Stripe webhook config
+3. Click "Deploy"
+
+### Configure Stripe Webhook
+
+1. Go to Stripe Dashboard → Developers → Webhooks
+2. Add endpoint: `https://agentbrain-auth.onrender.com/webhooks/stripe`
+3. Select events:
+   - `checkout.session.completed`
+   - `customer.subscription.updated`
+   - `customer.subscription.deleted`
+4. Copy the signing secret to `STRIPE_WEBHOOK_SECRET`
+
+### Deploy MCP Server
+
+Same process, but use start command:
+```
+uvicorn server:app --host 0.0.0.0 --port $PORT
+```
