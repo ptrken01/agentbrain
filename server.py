@@ -26,16 +26,18 @@ async def verify_api_key(api_key: str) -> dict:
     """Verify API key with auth service and return user info"""
     async with httpx.AsyncClient() as client:
         try:
-            resp = await client.get(
-                f"{AUTH_SERVICE_URL}/auth/limits",
-                headers={"X-API-Key": api_key},
+            resp = await client.post(
+                f"{AUTH_SERVICE_URL}/auth/verify",
+                headers={"api_key": api_key},
                 timeout=5
             )
             if resp.status_code == 200:
-                return resp.json()
+                data = resp.json()
+                if data.get("valid"):
+                    return data
         except Exception:
             pass
-    return {"tier": "free", "max_memories": 1000, "max_api_calls_per_day": 100, "features": ["basic_search"]}
+    return {"valid": False, "tier": "free", "max_memories": 1000, "max_api_calls_per_day": 100, "features": ["basic_search"]}
 
 def check_feature_access(user_tier: str, feature: str) -> bool:
     """Check if a tier has access to a feature"""
