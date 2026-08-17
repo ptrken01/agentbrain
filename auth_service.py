@@ -90,10 +90,15 @@ async def root():
     return {"status": "ok", "service": "AgentBrain Auth"}
 
 @app.post("/auth/register")
-async def register(req):
+async def register(request: Request):
+    data = await request.json()
+    email = data.get("email", "")
+    password = data.get("password", "")
+    if not email or not password:
+        raise HTTPException(status_code=400, detail="Email and password required")
     conn = get_db()
     cur = conn.cursor()
-    cur.execute("SELECT id FROM users WHERE email = %s", (req.email,))
+    cur.execute("SELECT id FROM users WHERE email = %s", (email,))
     if cur.fetchone():
         cur.close()
         conn.close()
@@ -101,7 +106,7 @@ async def register(req):
     api_key = generate_api_key()
     cur.execute(
         "INSERT INTO users (email, password_hash, api_key) VALUES (%s, %s, %s)",
-        (req.email, hash_password(req.password), api_key)
+        (email, hash_password(password), api_key)
     )
     conn.commit()
     cur.close()
@@ -109,11 +114,14 @@ async def register(req):
     return {"api_key": api_key, "tier": "free"}
 
 @app.post("/auth/login")
-async def login(req):
+async def login(request: Request):
+    data = await request.json()
+    email = data.get("email", "")
+    password = data.get("password", "")
     conn = get_db()
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE email = %s AND password_hash = %s",
-                (req.email, hash_password(req.password)))
+                (email, hash_password(password)))
     user = cur.fetchone()
     cur.close()
     conn.close()
