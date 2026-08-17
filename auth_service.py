@@ -1,10 +1,12 @@
 """
 AgentBrain Auth Service — Subscription & API Key Management
+Uses pg8000 (pure Python PostgreSQL driver) for reliability
 """
 import os
 import json
 import hashlib
 import secrets
+import pg8000
 from fastapi import FastAPI, HTTPException, Header, Request
 from pydantic import BaseModel
 import stripe
@@ -21,9 +23,22 @@ stripe.api_key = STRIPE_SECRET_KEY
 app = FastAPI(title="AgentBrain Auth Service")
 
 def get_db():
-    import psycopg2
-    from psycopg2.extras import RealDictCursor
-    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    # Parse DATABASE_URL
+    # postgresql://user:pass@host:5432/dbname
+    url = DATABASE_URL.replace("postgresql://", "")
+    if "@" in url:
+        user_pass, host_db = url.split("@")
+        user, password = user_pass.split(":")
+        host_port, dbname = host_db.split("/")
+        if ":" in host_port:
+            host, port = host_port.split(":")
+        else:
+            host = host_port
+            port = 5432
+    else:
+        user, password, host, port, dbname = "user", "pass", "localhost", 5432, "agentbrain"
+
+    conn = pg8000.connect(user=user, password=password, host=host, port=int(port), database=dbname)
     return conn
 
 def init_db():
@@ -47,12 +62,11 @@ def init_db():
     cur.close()
     conn.close()
 
-# Try to init db on startup
 db_initialized = False
 try:
     init_db()
     db_initialized = True
-    print("DB initialized successfully")
+    print("DB initialized")
 except Exception as e:
     print(f"DB init warning: {e}")
 
@@ -83,10 +97,13 @@ def get_user(api_key: str):
     conn = get_db()
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE api_key = %s", (api_key,))
-    user = cur.fetchone()
+    columns = [desc[0] for desc in cur.description]
+    row = cur.fetchone()
     cur.close()
     conn.close()
-    return user
+    if row:
+        return dict(zip(columns, row))
+    return None
 
 @app.get("/")
 async def root():
@@ -137,11 +154,13 @@ async def login(request: Request):
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE email = %s AND password_hash = %s",
                 (email, hash_password(password)))
-    user = cur.fetchone()
+    columns = [desc[0] for desc in cur.description]
+    row = cur.fetchone()
     cur.close()
     conn.close()
-    if not user:
+    if not row:
         raise HTTPException(status_code=401, detail="Invalid credentials")
+    user = dict(zip(columns, row))
     return {"api_key": user["api_key"], "tier": user["tier"]}
 
 @app.get("/auth/limits")
@@ -194,10 +213,12 @@ async def stripe_webhook(request: Request):
         conn = get_db()
         cur = conn.cursor()
         cur.execute("SELECT * FROM users WHERE email = %s", (customer_email,))
+        columns = [desc[0] for desc in cur.description]
         user = cur.fetchone()
         if user:
+            user_dict = dict(zip(columns, user))
             cur.execute("UPDATE users SET tier=%s, stripe_customer_id=%s, subscription_id=%s, subscription_status=%s WHERE id=%s",
-                        (tier, customer_id, subscription_id, "active", user["id"]))
+                        (tier, customer_id, subscription_id, "active", user_dict["id"]))
         else:
             api_key = generate_api_key()
             cur.execute("INSERT INTO users (email, api_key, tier, stripe_customer_id, subscription_id, subscription_status) VALUES (%s,%s,%s,%s,%s,%s)",
