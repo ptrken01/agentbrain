@@ -13,7 +13,8 @@ from fastapi import FastAPI, HTTPException, Depends, Header, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import stripe
-import asyncpg
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 # Configuration
 DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://localhost/agentbrain")
@@ -28,56 +29,60 @@ app = FastAPI(title="AgentBrain Auth Service")
 async def root():
     return {"status": "ok", "service": "AgentBrain Auth", "version": "1.0", "database": "postgresql"}
 
-# Database setup
-db_pool: asyncpg.Pool = None
-
-@app.on_event("startup")
-async def startup():
-    global db_pool
-    db_pool = await asyncpg.create_pool(DATABASE_URL, min_size=1, max_size=10)
-    async with db_pool.acquire() as conn:
-        await conn.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id SERIAL PRIMARY KEY,
-                email TEXT UNIQUE NOT NULL,
-                password_hash TEXT,
-                api_key TEXT UNIQUE,
-                tier TEXT DEFAULT 'free',
-                stripe_customer_id TEXT,
-                subscription_id TEXT,
-                subscription_status TEXT DEFAULT 'inactive',
-                created_at TIMESTAMP DEFAULT NOW(),
-                updated_at TIMESTAMP DEFAULT NOW()
-            );
-        """)
-        await conn.execute("""
-            CREATE TABLE IF NOT EXISTS memory_limits (
-                tier TEXT PRIMARY KEY,
-                max_memories INTEGER,
-                max_api_calls_per_day INTEGER,
-                features TEXT
-            );
-        """)
-        # Insert default tiers
-        await conn.execute("""
-            INSERT INTO memory_limits (tier, max_memories, max_api_calls_per_day, features) 
-            VALUES ('free', 1000, 100, '["basic_search"]')
-            ON CONFLICT (tier) DO NOTHING;
-        """)
-        await conn.execute("""
-            INSERT INTO memory_limits (tier, max_memories, max_api_calls_per_day, features) 
-            VALUES ('pro', 50000, 10000, '["basic_search", "advanced_search", "context_packs", "agent_discovery"]')
-            ON CONFLICT (tier) DO NOTHING;
-        """)
-        await conn.execute("""
-            INSERT INTO memory_limits (tier, max_memories, max_api_calls_per_day, features) 
-            VALUES ('team', 999999999, 1000000, '["basic_search", "advanced_search", "context_packs", "agent_discovery", "team_brain", "marketplace", "audit_trail"]')
-            ON CONFLICT (tier) DO NOTHING;
-        """)
-
-async def get_db():
-    async with db_pool.acquire() as conn:
+# Database connection
+def get_db():
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    try:
         yield conn
+    finally:
+        conn.close()
+
+def init_db():
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT,
+            api_key TEXT UNIQUE,
+            tier TEXT DEFAULT 'free',
+            stripe_customer_id TEXT,
+            subscription_id TEXT,
+            subscription_status TEXT DEFAULT 'inactive',
+            created_at TIMESTAMP DEFAULT NOW(),
+            updated_at TIMESTAMP DEFAULT NOW()
+        );
+    """)
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS memory_limits (
+            tier TEXT PRIMARY KEY,
+            max_memories INTEGER,
+            max_api_calls_per_day INTEGER,
+            features TEXT
+        );
+    """)
+    # Insert default tiers
+    cur.execute("""
+        INSERT INTO memory_limits (tier, max_memories, max_api_calls_per_day, features) 
+        VALUES ('free', 1000, 100, '["basic_search"]')
+        ON CONFLICT (tier) DO NOTHING;
+    """)
+    cur.execute("""
+        INSERT INTO memory_limits (tier, max_memories, max_api_calls_per_day, features) 
+        VALUES ('pro', 50000, 10000, '["basic_search", "advanced_search", "context_packs", "agent_discovery"]')
+        ON CONFLICT (tier) DO NOTHING;
+    """)
+    cur.execute("""
+        INSERT INTO memory_limits (tier, max_memories, max_api_calls_per_day, features) 
+        VALUES ('team', 999999999, 1000000, '["basic_search", "advanced_search", "context_packs", "agent_discovery", "team_brain", "marketplace", "audit_trail"]')
+        ON CONFLICT (tier) DO NOTHING;
+    """)
+    conn.commit()
+    cur.close()
+    conn.close()
+
+init_db()
 
 # Models
 class RegisterRequest(BaseModel):
@@ -93,13 +98,6 @@ def hash_password(password: str) -> str:
 
 def generate_api_key() -> str:
     return f"ab_{secrets.token_urlsafe(32)}"
-
-async def get_current_user(x_api_key: str = Header(...)):
-    async with db_pool.acquire() as conn:
-        user = await conn.fetchrow("SELECT * FROM users WHERE api_key = $1", x_api_key)
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-    return dict(user)
 
 def get_tier_features(tier: str) -> list:
     """Get features for a tier"""
@@ -120,32 +118,54 @@ def get_tier_limit(user_tier: str, limit: str) -> int:
     }
     return limits.get(user_tier, limits["free"]).get(limit, 0)
 
+async def get_current_user(x_api_key: str = Header(...)):
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE api_key = %s", (x_api_key,))
+    user = cur.fetchone()
+    cur.close()
+    conn.close()
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+    return user
+
 # Routes
 @app.post("/auth/register")
 async def register(req: RegisterRequest):
-    async with db_pool.acquire() as conn:
-        existing = await conn.fetchrow("SELECT id FROM users WHERE email = $1", req.email)
-        if existing:
-            raise HTTPException(status_code=400, detail="Email already registered")
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM users WHERE email = %s", (req.email,))
+    existing = cur.fetchone()
+    if existing:
+        cur.close()
+        conn.close()
+        raise HTTPException(status_code=400, detail="Email already registered")
 
-        api_key = generate_api_key()
-        password_hash = hash_password(req.password)
+    api_key = generate_api_key()
+    password_hash = hash_password(req.password)
 
-        await conn.execute(
-            "INSERT INTO users (email, password_hash, api_key) VALUES ($1, $2, $3)",
-            req.email, password_hash, api_key
-        )
+    cur.execute(
+        "INSERT INTO users (email, password_hash, api_key) VALUES (%s, %s, %s)",
+        (req.email, password_hash, api_key)
+    )
+    conn.commit()
+    cur.close()
+    conn.close()
 
     return {"api_key": api_key, "tier": "free", "message": "Registration successful. Upgrade to Pro for more features."}
 
 @app.post("/auth/login")
 async def login(req: LoginRequest):
     password_hash = hash_password(req.password)
-    async with db_pool.acquire() as conn:
-        user = await conn.fetchrow(
-            "SELECT * FROM users WHERE email = $1 AND password_hash = $2",
-            req.email, password_hash
-        )
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT * FROM users WHERE email = %s AND password_hash = %s",
+        (req.email, password_hash)
+    )
+    user = cur.fetchone()
+    cur.close()
+    conn.close()
 
     if not user:
         raise HTTPException(status_code=401, detail="Invalid email or password")
@@ -174,8 +194,12 @@ async def limits(user: dict = Depends(get_current_user)):
 @app.post("/auth/verify")
 async def verify(api_key: str = Header(...)):
     """Verify an API key and return tier info (used by MCP server)"""
-    async with db_pool.acquire() as conn:
-        user = await conn.fetchrow("SELECT * FROM users WHERE api_key = $1", api_key)
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE api_key = %s", (api_key,))
+    user = cur.fetchone()
+    cur.close()
+    conn.close()
 
     if not user:
         return {"valid": False, "tier": "free", "features": get_tier_features("free")}
@@ -229,38 +253,51 @@ async def handle_successful_payment(session: dict):
         elif price_id == os.environ.get("STRIPE_TEAM_PRICE_ID", ""):
             tier = "team"
 
-    async with db_pool.acquire() as conn:
-        user = await conn.fetchrow("SELECT * FROM users WHERE email = $1", customer_email)
-        if user:
-            await conn.execute(
-                "UPDATE users SET tier = $1, stripe_customer_id = $2, subscription_id = $3, subscription_status = $4, updated_at = NOW() WHERE id = $5",
-                tier, customer_id, subscription_id, "active", user["id"]
-            )
-        else:
-            api_key = generate_api_key()
-            await conn.execute(
-                "INSERT INTO users (email, api_key, tier, stripe_customer_id, subscription_id, subscription_status) VALUES ($1, $2, $3, $4, $5, $6)",
-                customer_email, api_key, tier, customer_id, subscription_id, "active"
-            )
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE email = %s", (customer_email,))
+    user = cur.fetchone()
+    if user:
+        cur.execute(
+            "UPDATE users SET tier = %s, stripe_customer_id = %s, subscription_id = %s, subscription_status = %s, updated_at = NOW() WHERE id = %s",
+            (tier, customer_id, subscription_id, "active", user["id"])
+        )
+    else:
+        api_key = generate_api_key()
+        cur.execute(
+            "INSERT INTO users (email, api_key, tier, stripe_customer_id, subscription_id, subscription_status) VALUES (%s, %s, %s, %s, %s, %s)",
+            (customer_email, api_key, tier, customer_id, subscription_id, "active")
+        )
+    conn.commit()
+    cur.close()
+    conn.close()
 
 async def handle_subscription_update(subscription: dict):
     customer_id = subscription["customer"]
     status = subscription["status"]
 
-    async with db_pool.acquire() as conn:
-        await conn.execute(
-            "UPDATE users SET subscription_status = $1, updated_at = NOW() WHERE stripe_customer_id = $2",
-            status, customer_id
-        )
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    cur = conn.cursor()
+    cur.execute(
+        "UPDATE users SET subscription_status = %s, updated_at = NOW() WHERE stripe_customer_id = %s",
+        (status, customer_id)
+    )
+    conn.commit()
+    cur.close()
+    conn.close()
 
 async def handle_subscription_cancelled(subscription: dict):
     customer_id = subscription["customer"]
 
-    async with db_pool.acquire() as conn:
-        await conn.execute(
-            "UPDATE users SET tier = 'free', subscription_status = 'cancelled', subscription_id = NULL, updated_at = NOW() WHERE stripe_customer_id = $1",
-            customer_id
-        )
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    cur = conn.cursor()
+    cur.execute(
+        "UPDATE users SET tier = 'free', subscription_status = 'cancelled', subscription_id = NULL, updated_at = NOW() WHERE stripe_customer_id = %s",
+        (customer_id,)
+    )
+    conn.commit()
+    cur.close()
+    conn.close()
 
 if __name__ == "__main__":
     import uvicorn
