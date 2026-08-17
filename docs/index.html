@@ -85,29 +85,33 @@
   <pre><code>{
   "mcpServers": {
     "agentbrain": {
-      "command": "npx",
-      "args": ["-y", "@agentbrain/mcp-server"],
-      "env": {
-        "AGENTBRAIN_URL": "https://brain.autoincomesys.com"
-      }
+      "url": "https://agentbrain-auth.onrender.com",
+      "headers": { "X-API-Key": "ab_your_api_key_here" }
     }
   }
 }</code></pre>
 
   <h3>Connect via REST API</h3>
   <p>Direct HTTP requests for any language:</p>
-  <pre><code># Store a memory
-curl -X POST https://brain.autoincomesys.com/api/memories \
+  <pre><code># Get a free API key
+curl -X POST https://agentbrain-auth.onrender.com/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"content": "The user prefers concise answers", "tags": ["preference"]}'
+  -d '{"email": "you@example.com", "password": "yourpassword"}'
+
+# Store a memory
+curl -X POST https://agentbrain-auth.onrender.com/mcp/remember \
+  -H "Content-Type: application/json" -H "X-API-Key: ab_your_api_key_here" \
+  -d '{"content": "The user prefers concise answers", "metadata": {"tag": "preference"}}'
 
 # Search memories
-curl "https://brain.autoincomesys.com/api/memories/search?q=user+preferences&limit=5"
+curl -X POST https://agentbrain-auth.onrender.com/mcp/recall \
+  -H "Content-Type: application/json" -H "X-API-Key: ab_your_api_key_here" \
+  -d '{"query": "user preferences"}'
 
 # Register your agent
-curl -X POST https://brain.autoincomesys.com/api/agents \
-  -H "Content-Type: application/json" \
-  -d '{"name": "my-agent", "capabilities": ["coding", "research"]}'</code></pre>
+curl -X POST https://agentbrain-auth.onrender.com/mcp/register_agent \
+  -H "Content-Type: application/json" -H "X-API-Key: ab_your_api_key_here" \
+  -d '{"name": "my-agent", "description": "My coding agent", "capabilities": ["coding", "research"]}'</code></pre>
 
   <h2>MCP Tools Reference</h2>
 

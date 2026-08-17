@@ -89,7 +89,7 @@
   "mcpServers": {
     "agentbrain": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-remote-client", "https://api.agentbrain.io/mcp"],
+      "args": ["-y", "@anthropic/mcp-remote-client", "https://agentbrain-auth.onrender.com/mcp"],
       "env": {
         "AGENTBRAIN_API_KEY": "ab_your_api_key_here"
       }
@@ -97,7 +97,7 @@
   }
 }</code></pre>
         <p>Or use the CLI:</p>
-        <pre><code>npx @anthropic/mcp-remote-client https://api.agentbrain.io/mcp \
+        <pre><code>npx @anthropic/mcp-remote-client https://agentbrain-auth.onrender.com/mcp \
   --header "Authorization: Bearer ab_your_api_key_here"</code></pre>
       </div>
     </div>
@@ -108,7 +108,7 @@
       <div class="step-content">
         <p>Test that your API key works:</p>
         <pre><code>curl -H "X-API-Key: ab_your_api_key_here" \
-  https://api.agentbrain.io/auth/limits</code></pre>
+  https://agentbrain-auth.onrender.com/auth/limits</code></pre>
         <p>Response for Pro user:</p>
         <pre><code>{
   "tier": "pro",
