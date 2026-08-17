@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Setup Guide — AgentBrain</title>
+  <meta name="description" content="How to set up AgentBrain after purchasing a subscription">
+  <style>
+    :root { --accent: #8b5cf6; --accent-dark: #7c3aed; --ink: #f8fafc; --muted: #94a3b8; --bg: #0f172a; --surface: #1e293b; --border: #334155; --green: #22c55e; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; }
+    .container { max-width: 800px; margin: 0 auto; padding: 40px 24px; }
+    h1 { font-size: 2.5rem; margin-bottom: 16px; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    h2 { font-size: 1.5rem; margin: 32px 0 16px; color: var(--accent); }
+    p { color: var(--muted); margin-bottom: 16px; }
+    .step { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+    .step-num { display: inline-block; width: 36px; height: 36px; background: var(--accent); color: white; border-radius: 50%; text-align: center; line-height: 36px; font-weight: bold; margin-right: 12px; }
+    .step-title { font-size: 1.2rem; font-weight: 600; display: inline-block; vertical-align: middle; }
+    .step-content { margin-top: 16px; }
+    code { background: rgba(139,92,246,0.15); color: var(--accent); padding: 2px 8px; border-radius: 6px; font-family: 'SF Mono', Monaco, monospace; font-size: 0.9rem; }
+    pre { background: #0a0a0a; border: 1px solid var(--border); border-radius: 12px; padding: 20px; overflow-x: auto; margin: 16px 0; }
+    pre code { background: none; color: #e2e8f0; padding: 0; }
+    .note { background: rgba(34,197,94,0.1); border: 1px solid var(--green); border-radius: 12px; padding: 16px; margin: 16px 0; }
+    .note strong { color: var(--green); }
+    .warn { background: rgba(234,179,8,0.1); border: 1px solid #eab308; border-radius: 12px; padding: 16px; margin: 16px 0; }
+    .warn strong { color: #eab308; }
+    .btn { display: inline-block; padding: 14px 28px; background: var(--accent); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; margin-top: 16px; }
+    .btn:hover { background: var(--accent-dark); }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Setup Guide</h1>
+    <p>Get started with AgentBrain in 2 minutes after subscribing.</p>
+
+    <div class="step">
+      <span class="step-num">1</span>
+      <span class="step-title">Subscribe & Get Your API Key</span>
+      <div class="step-content">
+        <p>After subscribing via Stripe, you'll receive an email with your API key. The key looks like:</p>
+        <code>ab_aBcDeFgHiJkLmNoPqRsTuVwXyZ123456789</code>
+        <div class="note">
+          <strong>✅ Instant Access</strong> — Your API key is generated automatically when Stripe confirms payment. No waiting, no manual approval.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-num">2</span>
+      <span class="step-title">Add AgentBrain to Your Agent</span>
+      <div class="step-content">
+        <p>Add AgentBrain as an MCP server in your agent's configuration:</p>
+        <pre><code>{
+  "mcpServers": {
+    "agentbrain": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-remote-client", "https://api.agentbrain.io/mcp"],
+      "env": {
+        "AGENTBRAIN_API_KEY": "ab_your_api_key_here"
+      }
+    }
+  }
+}</code></pre>
+        <p>Or use the CLI:</p>
+        <pre><code>npx @anthropic/mcp-remote-client https://api.agentbrain.io/mcp \
+  --header "Authorization: Bearer ab_your_api_key_here"</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-num">3</span>
+      <span class="step-title">Verify Your Access</span>
+      <div class="step-content">
+        <p>Test that your API key works:</p>
+        <pre><code>curl -H "X-API-Key: ab_your_api_key_here" \
+  https://api.agentbrain.io/auth/limits</code></pre>
+        <p>Response for Pro user:</p>
+        <pre><code>{
+  "tier": "pro",
+  "max_memories": 50000,
+  "max_api_calls_per_day": 10000,
+  "features": ["basic_search", "advanced_search", "remember", "recall", "context_packs", "agent_discovery", "knowledge_graph"]
+}</code></pre>
+        <div class="note">
+          <strong>✅ Features Unlocked</strong> — The API confirms your tier and grants access to all Pro features immediately.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-num">4</span>
+      <span class="step-title">Start Using AgentBrain</span>
+      <div class="step-content">
+        <p>Your agent can now use these tools based on your tier:</p>
+        <table>
+          <tr><th>Feature</th><th>Free</th><th>Pro</th><th>Team</th></tr>
+          <tr><td>Remember & Recall</td><td>✅</td><td>✅</td><td>✅</td></tr>
+          <tr><td>Basic Search</td><td>✅</td><td>✅</td><td>✅</td></tr>
+          <tr><td>Advanced Search</td><td>❌</td><td>✅</td><td>✅</td></tr>
+          <tr><td>Knowledge Graph</td><td>❌</td><td>✅</td><td>✅</td></tr>
+          <tr><td>Agent Discovery</td><td>❌</td><td>✅</td><td>✅</td></tr>
+          <tr><td>Agent Marketplace</td><td>❌</td><td>❌</td><td>✅</td></tr>
+          <tr><td>Team Brain</td><td>❌</td><td>❌</td><td>✅</td></tr>
+        </table>
+        <div class="warn">
+          <strong>🔒 Technical Enforcement</strong> — Features are enforced at the API level. If you try to use a feature your tier doesn't have, the API returns an "Upgrade required" message.
+        </div>
+      </div>
+    </div>
+
+    <h2>Cancel Anytime</h2>
+    <p>Your subscription is managed by Stripe. Cancel anytime and:</p>
+    <ul>
+      <li>You keep access until the end of your billing period</li>
+      <li>After that, your API key automatically downgrades to Free</li>
+      <li>No lock-in, no questions asked</li>
+    </ul>
+
+    <div style="text-align:center;margin-top:40px;">
+      <a href="/" class="btn">← Back to Home</a>
+    </div>
+  </div>
+</body>
+</html>
