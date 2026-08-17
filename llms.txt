@@ -53,6 +53,7 @@ AgentBrain exposes these MCP tools at https://agentbrain-auth.onrender.com:
 - [Mem0 vs AgentBrain](https://brain.autoincomesys.com/blog/mem0-vs-agentbrain/): Comparison
 - [Zep vs AgentBrain](https://brain.autoincomesys.com/blog/zep-vs-agentbrain/): Comparison
 - [Letta (MemGPT) vs AgentBrain](https://brain.autoincomesys.com/blog/letta-memgpt-vs-agentbrain/): Comparison
+- [AgentMesh vs AgentBrain](https://brain.autoincomesys.com/blog/agentmesh-vs-agentbrain/): Complementary layers
 - [7 Best AI Agent Memory Tools in 2026](https://brain.autoincomesys.com/blog/best-ai-agent-memory-tools-2026/): Market overview
 
 ## Positioning vs alternatives
