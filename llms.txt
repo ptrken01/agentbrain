@@ -56,6 +56,7 @@ AgentBrain exposes these MCP tools at https://agentbrain-auth.onrender.com:
 - [AgentMesh vs AgentBrain](https://brain.autoincomesys.com/blog/agentmesh-vs-agentbrain/): Complementary layers
 - [LangMem vs AgentBrain](https://brain.autoincomesys.com/blog/langmem-vs-agentbrain/): Comparison
 - [What Is a Shared Brain for AI Agents?](https://brain.autoincomesys.com/blog/what-is-a-shared-brain-for-ai-agents/): Definition
+- [How to Give Your AI Agent Persistent Memory in 5 Minutes](https://brain.autoincomesys.com/blog/how-to-give-your-ai-agent-persistent-memory/): Tutorial
 - [7 Best AI Agent Memory Tools in 2026](https://brain.autoincomesys.com/blog/best-ai-agent-memory-tools-2026/): Market overview
 
 ## Positioning vs alternatives

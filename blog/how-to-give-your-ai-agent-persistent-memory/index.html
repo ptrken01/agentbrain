@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to Give Your AI Agent Persistent Memory in 5 Minutes — AgentBrain</title>
+  <meta name="description" content="Step-by-step: connect any MCP-compatible agent to a hosted shared brain for durable, shared memory. Register, connect via MCP, remember, recall. No code changes.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://brain.autoincomesys.com/blog/how-to-give-your-ai-agent-persistent-memory/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="How to Give Your AI Agent Persistent Memory in 5 Minutes">
+  <meta property="og:description" content="Step-by-step: connect any MCP-compatible agent to a hosted shared brain for durable, shared memory. Register, connect via MCP, remember, recall. No code changes.">
+  <meta property="og:url" content="https://brain.autoincomesys.com/blog/how-to-give-your-ai-agent-persistent-memory/">
+  <meta property="og:site_name" content="AgentBrain">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <meta property="og:image" content="https://brain.autoincomesys.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://brain.autoincomesys.com/og-image.png">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "How to Give Your AI Agent Persistent Memory in 5 Minutes",
+  "description": "Step-by-step: connect any MCP-compatible agent to a hosted shared brain for durable, shared memory. Register, connect via MCP, remember, recall. No code changes.",
+  "author": {
+    "@type": "Organization",
+    "name": "AgentBrain",
+    "url": "https://brain.autoincomesys.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "AgentBrain",
+    "url": "https://brain.autoincomesys.com"
+  },
+  "datePublished": "2026-08-17",
+  "dateModified": "2026-08-17",
+  "mainEntityOfPage": "https://brain.autoincomesys.com/blog/how-to-give-your-ai-agent-persistent-memory/",
+  "url": "https://brain.autoincomesys.com/blog/how-to-give-your-ai-agent-persistent-memory/",
+  "inLanguage": "en",
+  "keywords": "how-to, agent-memory, persistent-memory, mcp, tutorial"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I give my AI agent persistent memory?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Connect it to a hosted shared brain like AgentBrain via MCP. Register for a free API key, add AgentBrain as an MCP server in your client config, then use the remember and recall tools. No code changes or custom storage required."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this work with Claude Desktop and Cursor?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Any MCP-compatible client works \u2014 Claude Desktop, Claude Code, Cursor, Windsurf, LangChain, and custom agents. You just add the MCP server config with your API key."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there a free tier?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. AgentBrain offers a free tier to get started, with paid plans (Pro $20/mo, Team $99/mo) for higher memory limits, knowledge-graph tools, and agent discovery."
+      }
+    }
+  ]
+}
+  </script>
+  <style>
+    :root { --accent: #8b5cf6; --ink: #f8fafc; --muted: #94a3b8; --bg: #0f172a; --surface: #1e293b; --border: #334155; --maxw: 700px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.7; }
+    .container { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+    nav { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 16px 0; }
+    nav .container { display: flex; align-items: center; justify-content: space-between; }
+    nav a { color: var(--ink); text-decoration: none; }
+    nav .logo { font-weight: 700; }
+    article { padding: 60px 0; }
+    h1 { font-size: 2.25rem; margin-bottom: 16px; line-height: 1.2; }
+    h2 { font-size: 1.5rem; margin: 40px 0 16px; color: var(--accent); }
+    h3 { font-size: 1.2rem; margin: 24px 0 12px; }
+    p { color: var(--muted); margin-bottom: 20px; }
+    .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 32px; }
+    .tag { background: rgba(139,92,246,0.1); color: var(--accent); padding: 2px 10px; border-radius: 20px; margin-right: 12px; }
+    ul, ol { color: var(--muted); margin: 16px 0; padding-left: 24px; }
+    ul li, ol li { margin: 8px 0; }
+    code { background: var(--surface); padding: 2px 8px; border-radius: 4px; font-size: 0.9rem; color: var(--accent); }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; overflow-x: auto; margin: 16px 0; font-size: 0.85rem; }
+    blockquote { border-left: 4px solid var(--accent); padding-left: 20px; margin: 24px 0; color: var(--ink); font-style: italic; }
+    .cta { background: var(--surface); border: 1px solid var(--accent); border-radius: 12px; padding: 24px; margin: 32px 0; text-align: center; }
+    .cta a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    footer { border-top: 1px solid var(--border); padding: 40px 0; text-align: center; color: var(--muted); font-size: 0.85rem; }
+    footer a { color: var(--accent); }
+  </style>
+</head>
+<body>
+<nav>
+  <div class="container">
+    <a href="/" class="logo">🧠 AgentBrain</a>
+    <a href="/blog">← Back to Blog</a>
+  </div>
+</nav>
+<article>
+  <div class="container">
+    <h1>How to Give Your AI Agent Persistent Memory in 5 Minutes</h1>
+    <div class="meta"><span class="tag">AgentBrain</span><span>2026-08-17</span></div>
+
+<p>Most AI agents forget everything the moment a session ends. Giving an agent persistent memory used to require building custom storage, embedding pipelines, and retrieval logic. With a hosted shared brain like <a href="/">AgentBrain</a>, you can give any MCP-compatible agent durable, shared memory in about five minutes — no code changes.</p>
+
+<h2>What you'll get</h2>
+<ul>
+  <li>Memories that survive across sessions</li>
+  <li>Context shared across multiple agents</li>
+  <li>Semantic recall (search by meaning, not keywords)</li>
+</ul>
+
+<h2>Step 1 — Get a free API key</h2>
+<p>Register to get an API key on the free tier:</p>
+<pre><code>curl -X POST https://agentbrain-auth.onrender.com/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email": "you@example.com", "password": "yourpassword"}'</code></pre>
+<p>You'll get back an API key that looks like <code>ab_...</code>. Keep it handy.</p>
+
+<h2>Step 2 — Connect your agent via MCP</h2>
+<p>Add AgentBrain as an MCP server in your agent's client config (Claude Desktop, Claude Code, Cursor, Windsurf, or any MCP client):</p>
+<pre><code>{
+  "mcpServers": {
+    "agentbrain": {
+      "url": "https://agentbrain-auth.onrender.com",
+      "headers": { "X-API-Key": "ab_your_api_key_here" }
+    }
+  }
+}</code></pre>
+
+<h2>Step 3 — Store a memory</h2>
+<p>Once connected, your agent can call the <code>remember</code> tool. You can also test it directly:</p>
+<pre><code>curl -X POST https://agentbrain-auth.onrender.com/mcp/remember \
+  -H "Content-Type: application/json" -H "X-API-Key: ab_your_api_key_here" \
+  -d '{"content": "The user prefers concise answers and works in fintech.", "metadata": {"tag": "preference"}}'</code></pre>
+
+<h2>Step 4 — Recall it later</h2>
+<p>In any future session, the agent retrieves relevant memories with <code>recall</code>:</p>
+<pre><code>curl -X POST https://agentbrain-auth.onrender.com/mcp/recall \
+  -H "Content-Type: application/json" -H "X-API-Key: ab_your_api_key_here" \
+  -d '{"query": "what does the user prefer?"}'</code></pre>
+
+<h2>Step 5 — Verify your limits</h2>
+<p>Check your tier and remaining capacity:</p>
+<pre><code>curl -H "X-API-Key: ab_your_api_key_here" \
+  https://agentbrain-auth.onrender.com/auth/limits</code></pre>
+
+<h2>Going further</h2>
+<p>The free tier is enough to get started. For higher memory limits, knowledge-graph tools, and agent discovery, see the <a href="/#pricing">paid plans</a>. To share context across a whole team of agents, register each agent with <code>register_agent</code> and let them discover each other with <code>discover_agents</code>.</p>
+
+<h2>Key takeaways</h2>
+<ul>
+  <li>You can add persistent memory to any MCP agent in ~5 minutes with no code changes.</li>
+  <li>The flow is: register → connect via MCP → remember → recall.</li>
+  <li>Because AgentBrain is shared and hosted, the memory works across agents and sessions.</li>
+</ul>
+
+  </div>
+</article>
+<footer>
+  <div class="container">
+    <p>AgentBrain — The shared brain for AI agents. <a href="/">Learn more</a></p>
+  </div>
+</footer>
+</body>
+</html>
