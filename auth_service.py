@@ -237,3 +237,159 @@ async def stripe_webhook(request: Request):
         cur.close()
         conn.close()
     return {"status": "ok"}
+
+
+# ============================================================
+# MCP Server Endpoints
+# ============================================================
+
+from datetime import datetime
+
+# In-memory storage (for demo - production would use vector DB)
+memories_db = {}
+knowledge_db = {}
+agents_db = {}
+
+@app.get("/mcp/status")
+async def mcp_status():
+    """MCP server status"""
+    return {
+        "status": "running",
+        "service": "AgentBrain MCP Server",
+        "version": "1.0",
+        "tools": [
+            "remember",
+            "recall",
+            "register_agent",
+            "discover_agents",
+            "add_knowledge",
+            "query_knowledge",
+            "get_context"
+        ]
+    }
+
+@app.post("/mcp/remember")
+async def mcp_remember(request: Request, x_api_key: str = Header(...)):
+    """Store a memory"""
+    user = get_user(x_api_key)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    tier = user["tier"]
+    max_memories = get_tier_limit(tier, "max_memories")
+    user_memories = [m for m in memories_db.values() if m.get("user_id") == user["id"]]
+    if len(user_memories) >= max_memories:
+        raise HTTPException(status_code=403, detail=f"Memory limit reached ({max_memories}). Upgrade to store more.")
+
+    data = await request.json()
+    memory_id = f"mem_{secrets.token_urlsafe(16)}"
+    memories_db[memory_id] = {
+        "id": memory_id,
+        "user_id": user["id"],
+        "content": data.get("content", ""),
+        "metadata": data.get("metadata", {}),
+        "created_at": datetime.now().isoformat()
+    }
+    return {"memory_id": memory_id, "status": "stored"}
+
+@app.post("/mcp/recall")
+async def mcp_recall(request: Request, x_api_key: str = Header(...)):
+    """Retrieve memories"""
+    user = get_user(x_api_key)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    data = await request.json()
+    query = data.get("query", "")
+    user_memories = [m for m in memories_db.values() if m.get("user_id") == user["id"]]
+    results = [m for m in user_memories if query.lower() in m["content"].lower()]
+    return {"memories": results[:10], "total": len(results)}
+
+@app.post("/mcp/register_agent")
+async def mcp_register_agent(request: Request, x_api_key: str = Header(...)):
+    """Register an agent (Pro+)"""
+    user = get_user(x_api_key)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+    if user["tier"] == "free":
+        raise HTTPException(status_code=403, detail="Upgrade to Pro to register agents")
+
+    data = await request.json()
+    agent_id = f"agent_{secrets.token_urlsafe(16)}"
+    agents_db[agent_id] = {
+        "id": agent_id,
+        "user_id": user["id"],
+        "name": data.get("name", ""),
+        "description": data.get("description", ""),
+        "capabilities": data.get("capabilities", []),
+        "created_at": datetime.now().isoformat()
+    }
+    return {"agent_id": agent_id, "status": "registered"}
+
+@app.get("/mcp/discover_agents")
+async def mcp_discover_agents(x_api_key: str = Header(...)):
+    """Discover agents (Pro+)"""
+    user = get_user(x_api_key)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+    if user["tier"] == "free":
+        raise HTTPException(status_code=403, detail="Upgrade to Pro to access agent marketplace")
+    return {"agents": list(agents_db.values())}
+
+@app.post("/mcp/add_knowledge")
+async def mcp_add_knowledge(request: Request, x_api_key: str = Header(...)):
+    """Add knowledge (Pro+)"""
+    user = get_user(x_api_key)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+    if user["tier"] == "free":
+        raise HTTPException(status_code=403, detail="Upgrade to Pro to add knowledge")
+
+    data = await request.json()
+    knowledge_id = f"knowledge_{secrets.token_urlsafe(16)}"
+    knowledge_db[knowledge_id] = {
+        "id": knowledge_id,
+        "user_id": user["id"],
+        "content": data.get("content", ""),
+        "relationships": data.get("relationships", []),
+        "created_at": datetime.now().isoformat()
+    }
+    return {"knowledge_id": knowledge_id, "status": "added"}
+
+@app.post("/mcp/query_knowledge")
+async def mcp_query_knowledge(request: Request, x_api_key: str = Header(...)):
+    """Query knowledge (Pro+)"""
+    user = get_user(x_api_key)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+    if user["tier"] == "free":
+        raise HTTPException(status_code=403, detail="Upgrade to Pro to query knowledge")
+
+    data = await request.json()
+    query = data.get("query", "")
+    user_knowledge = [k for k in knowledge_db.values() if k.get("user_id") == user["id"]]
+    results = [k for k in user_knowledge if query.lower() in k["content"].lower()]
+    return {"knowledge": results[:10], "total": len(results)}
+
+@app.post("/mcp/get_context")
+async def mcp_get_context(request: Request, x_api_key: str = Header(...)):
+    """Get context pack"""
+    user = get_user(x_api_key)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    data = await request.json()
+    agent_id = data.get("agent_id", "")
+    user_memories = [m for m in memories_db.values() if m.get("user_id") == user["id"]]
+    user_knowledge = [k for k in knowledge_db.values() if k.get("user_id") == user["id"]]
+
+    return {
+        "agent_id": agent_id,
+        "memories": user_memories[:5],
+        "knowledge": user_knowledge[:5],
+        "total_context_items": len(user_memories) + len(user_knowledge)
+    }
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
