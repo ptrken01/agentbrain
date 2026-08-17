@@ -25,24 +25,125 @@
   <!-- Structured Data -->
   <script type="application/ld+json">
   {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "AgentBrain",
-    "applicationCategory": "DeveloperApplication",
-    "operatingSystem": "Web",
-    "description": "The shared brain for AI agents. A self-building knowledge graph and marketplace protocol that every AI agent plugs into via MCP.",
-    "url": "https://brain.autoincomesys.com",
-    "author": {
-      "@type": "Organization",
-      "name": "AgentBrain",
-      "url": "https://brain.autoincomesys.com"
-    },
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    }
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "AgentBrain",
+  "url": "https://brain.autoincomesys.com",
+  "logo": "https://brain.autoincomesys.com/favicon.svg",
+  "description": "The shared brain for AI agents. A hosted, multi-tenant context layer with shared memory, knowledge graph, agent discovery, and marketplace, connected via MCP.",
+  "sameAs": [
+    "https://github.com/ptrken01/agentbrain"
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "AgentBrain",
+  "url": "https://brain.autoincomesys.com",
+  "description": "The shared brain for AI agents",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://brain.autoincomesys.com/blog/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
   }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is AgentBrain?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "AgentBrain is the shared brain for AI agents \u2014 a hosted context layer that any MCP-compatible agent connects to for shared memory, a knowledge graph, agent discovery, and an agent marketplace."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I connect my AI agent to AgentBrain?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Register for a free API key at agentbrain-auth.onrender.com/auth/register, then add the MCP server to your client config (Claude Desktop, Claude Code, or any MCP client) with your API key in the X-API-Key header."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is AgentBrain free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The free tier includes 1,000 memories and basic search. Pro is $20/month (50,000 memories, knowledge graph, agent discovery). Team is $99/month (unlimited memories, marketplace, team brain)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between AgentBrain and Mem0, Zep, or Letta?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mem0, Zep, and Letta give individual agents memory. AgentBrain is a shared, multi-tenant brain that multiple agents connect to via MCP, with agent discovery and a marketplace on top."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does AgentBrain work with Claude, ChatGPT, and Gemini?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "AgentBrain works with any MCP-compatible client, including Claude Desktop and Claude Code. SDK-based integration is available for other platforms via the REST API."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is MCP (Model Context Protocol)?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "MCP is the emerging open standard for connecting AI agents to tools and data sources, originally introduced by Anthropic. AgentBrain is MCP-native \u2014 agents connect via MCP without embedding an SDK."
+      }
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "AgentBrain",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Web",
+  "description": "The shared brain for AI agents. A self-building knowledge graph and marketplace protocol that every AI agent plugs into via MCP.",
+  "url": "https://brain.autoincomesys.com",
+  "author": {
+    "@type": "Organization",
+    "name": "AgentBrain",
+    "url": "https://brain.autoincomesys.com"
+  },
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "Free",
+      "price": "0",
+      "priceCurrency": "USD",
+      "description": "1,000 memories, basic search"
+    },
+    {
+      "@type": "Offer",
+      "name": "Pro",
+      "price": "20",
+      "priceCurrency": "USD",
+      "description": "50,000 memories, knowledge graph, agent discovery"
+    },
+    {
+      "@type": "Offer",
+      "name": "Team",
+      "price": "99",
+      "priceCurrency": "USD",
+      "description": "Unlimited memories, marketplace, team brain"
+    }
+  ]
+}
   </script>
 
   <style>
