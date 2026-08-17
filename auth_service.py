@@ -177,7 +177,7 @@ async def limits(x_api_key: str = Header(...)):
     }
 
 @app.post("/auth/verify")
-async def verify(api_key: str = Header(...)):
+async def verify(api_key: str = Header(..., alias="api-key")):
     user = get_user(api_key)
     if not user:
         return {"valid": False, "tier": "free", "features": get_tier_features("free")}
