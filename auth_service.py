@@ -48,8 +48,11 @@ def init_db():
     conn.close()
 
 # Try to init db on startup
+db_initialized = False
 try:
     init_db()
+    db_initialized = True
+    print("DB initialized successfully")
 except Exception as e:
     print(f"DB init warning: {e}")
 
@@ -87,7 +90,19 @@ def get_user(api_key: str):
 
 @app.get("/")
 async def root():
-    return {"status": "ok", "service": "AgentBrain Auth"}
+    return {"status": "ok", "service": "AgentBrain Auth", "db_initialized": db_initialized}
+
+@app.get("/health")
+async def health():
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute("SELECT 1")
+        cur.close()
+        conn.close()
+        return {"status": "healthy", "database": "connected"}
+    except Exception as e:
+        return {"status": "unhealthy", "database": str(e)}
 
 @app.post("/auth/register")
 async def register(request: Request):
