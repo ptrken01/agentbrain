@@ -20,6 +20,10 @@ stripe.api_key = STRIPE_SECRET_KEY
 
 app = FastAPI(title="AgentBrain Auth Service")
 
+@app.get("/")
+async def root():
+    return {"status": "ok", "service": "AgentBrain Auth", "version": "1.0"}
+
 # Database setup
 def get_db():
     conn = sqlite3.connect(DATABASE)
