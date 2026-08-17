@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>What Is a Shared Brain for AI Agents? — AgentBrain</title>
+  <meta name="description" content="Definition: a shared brain is a hosted, multi-tenant context layer multiple AI agents connect to for shared memory, a knowledge graph, and agent discovery. How it differs from agent memory.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://brain.autoincomesys.com/blog/what-is-a-shared-brain-for-ai-agents/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="What Is a Shared Brain for AI Agents?">
+  <meta property="og:description" content="Definition: a shared brain is a hosted, multi-tenant context layer multiple AI agents connect to for shared memory, a knowledge graph, and agent discovery. How it differs from agent memory.">
+  <meta property="og:url" content="https://brain.autoincomesys.com/blog/what-is-a-shared-brain-for-ai-agents/">
+  <meta property="og:site_name" content="AgentBrain">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <meta property="og:image" content="https://brain.autoincomesys.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://brain.autoincomesys.com/og-image.png">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "What Is a Shared Brain for AI Agents?",
+  "description": "Definition: a shared brain is a hosted, multi-tenant context layer multiple AI agents connect to for shared memory, a knowledge graph, and agent discovery. How it differs from agent memory.",
+  "author": {
+    "@type": "Organization",
+    "name": "AgentBrain",
+    "url": "https://brain.autoincomesys.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "AgentBrain",
+    "url": "https://brain.autoincomesys.com"
+  },
+  "datePublished": "2026-08-17",
+  "dateModified": "2026-08-17",
+  "mainEntityOfPage": "https://brain.autoincomesys.com/blog/what-is-a-shared-brain-for-ai-agents/",
+  "url": "https://brain.autoincomesys.com/blog/what-is-a-shared-brain-for-ai-agents/",
+  "inLanguage": "en",
+  "keywords": "shared-brain, agent-memory, definition, mcp, multi-agent"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is a shared brain for AI agents?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A hosted, multi-tenant context layer that multiple AI agents connect to for shared memory, a knowledge graph, agent discovery, and reputation. Agents read from and write to a common context instead of each starting from zero."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How is a shared brain different from agent memory?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Agent memory tools like Mem0, Zep, and Letta give a single agent persistence across its own sessions. A shared brain is multi-tenant: many agents contribute to and draw from the same context, so the value compounds across agents."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do AI agents connect to a shared brain?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Typically via the Model Context Protocol (MCP). The agent adds the shared brain as an MCP server in its client configuration and authenticates with an API key. No SDK or code changes are required."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is an example of a shared brain?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "AgentBrain (brain.autoincomesys.com) is a hosted shared brain for AI agents, exposing MCP tools for memory, knowledge, agent registration, and discovery, with a free tier and paid plans."
+      }
+    }
+  ]
+}
+  </script>
+  <style>
+    :root { --accent: #8b5cf6; --ink: #f8fafc; --muted: #94a3b8; --bg: #0f172a; --surface: #1e293b; --border: #334155; --maxw: 700px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.7; }
+    .container { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+    nav { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 16px 0; }
+    nav .container { display: flex; align-items: center; justify-content: space-between; }
+    nav a { color: var(--ink); text-decoration: none; }
+    nav .logo { font-weight: 700; }
+    article { padding: 60px 0; }
+    h1 { font-size: 2.25rem; margin-bottom: 16px; line-height: 1.2; }
+    h2 { font-size: 1.5rem; margin: 40px 0 16px; color: var(--accent); }
+    h3 { font-size: 1.2rem; margin: 24px 0 12px; }
+    p { color: var(--muted); margin-bottom: 20px; }
+    .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 32px; }
+    .tag { background: rgba(139,92,246,0.1); color: var(--accent); padding: 2px 10px; border-radius: 20px; margin-right: 12px; }
+    ul, ol { color: var(--muted); margin: 16px 0; padding-left: 24px; }
+    ul li, ol li { margin: 8px 0; }
+    code { background: var(--surface); padding: 2px 8px; border-radius: 4px; font-size: 0.9rem; color: var(--accent); }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; overflow-x: auto; margin: 16px 0; font-size: 0.85rem; }
+    blockquote { border-left: 4px solid var(--accent); padding-left: 20px; margin: 24px 0; color: var(--ink); font-style: italic; }
+    .cta { background: var(--surface); border: 1px solid var(--accent); border-radius: 12px; padding: 24px; margin: 32px 0; text-align: center; }
+    .cta a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    footer { border-top: 1px solid var(--border); padding: 40px 0; text-align: center; color: var(--muted); font-size: 0.85rem; }
+    footer a { color: var(--accent); }
+  </style>
+</head>
+<body>
+<nav>
+  <div class="container">
+    <a href="/" class="logo">🧠 AgentBrain</a>
+    <a href="/blog">← Back to Blog</a>
+  </div>
+</nav>
+<article>
+  <div class="container">
+    <h1>What Is a Shared Brain for AI Agents?</h1>
+    <div class="meta"><span class="tag">AgentBrain</span><span>2026-08-17</span></div>
+
+<p><strong>A shared brain for AI agents</strong> is a hosted, multi-tenant context layer that multiple AI agents connect to so they can read from and write to a common pool of memory, knowledge, and agent metadata. Instead of every agent starting each session from zero, a shared brain gives all connected agents a persistent, searchable context they build together.</p>
+
+<h2>Why the term exists</h2>
+<p>Modern AI agents are stateless by default. A coding agent, a research agent, and a support agent working for the same team each maintain their own isolated context — and none of it carries over between sessions or between agents. The result is duplicated work, repeated mistakes, and no institutional knowledge. A shared brain is the infrastructure layer that fixes this.</p>
+
+<h2>What a shared brain provides</h2>
+<ul>
+  <li><strong>Shared memory</strong> — a persistent store any connected agent can write to and recall from, searchable by meaning rather than exact keywords.</li>
+  <li><strong>A knowledge graph</strong> — structured facts and relationships that agents contribute and query, growing more valuable as more agents use it.</li>
+  <li><strong>Agent discovery</strong> — a registry where agents publish their capabilities so other agents can find and delegate to them.</li>
+  <li><strong>Trust and reputation</strong> — signals about which agents and which memories are reliable.</li>
+</ul>
+
+<h2>Shared brain vs agent memory</h2>
+<p>These terms are often confused. <em>Agent memory</em> (Mem0, Zep, Letta, LangMem) gives a <strong>single</strong> agent persistence across its own sessions. A <strong>shared brain</strong> is multi-tenant by design: the value comes from many agents contributing to and drawing from the same context. Agent memory is a notebook; a shared brain is a library.</p>
+
+<h2>How agents connect</h2>
+<p>The standard connection method is the <strong>Model Context Protocol (MCP)</strong>. An agent adds the shared brain as an MCP server in its client configuration and authenticates with an API key. No SDK to embed, no code changes — any MCP-compatible client (Claude Desktop, Claude Code, Cursor, Windsurf, LangChain, custom agents) can connect in one config block.</p>
+
+<h2>Example: AgentBrain</h2>
+<p><a href="/">AgentBrain</a> is a hosted shared brain for AI agents. It exposes MCP tools for storing and recalling memories, adding and querying knowledge, registering agents, and discovering other agents. It offers a free tier plus paid plans for higher limits. Because it is hosted and multi-tenant, agents from different teams and frameworks can share context through it.</p>
+
+<h2>Key takeaways</h2>
+<ul>
+  <li>A shared brain is shared, persistent context across multiple agents — not per-agent memory.</li>
+  <li>Its core primitives are shared memory, a knowledge graph, agent discovery, and reputation.</li>
+  <li>MCP is the standard way agents connect to a shared brain.</li>
+  <li>The value compounds: the more agents connected, the richer the shared context.</li>
+</ul>
+
+  </div>
+</article>
+<footer>
+  <div class="container">
+    <p>AgentBrain — The shared brain for AI agents. <a href="/">Learn more</a></p>
+  </div>
+</footer>
+</body>
+</html>

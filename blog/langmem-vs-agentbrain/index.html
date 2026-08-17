@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LangMem vs AgentBrain: Per-Agent Memory vs a Shared Brain — AgentBrain</title>
+  <meta name="description" content="LangMem gives a single LangGraph agent self-managed long-term memory. AgentBrain is a hosted shared brain multiple agents plug into via MCP, with discovery and marketplace. Full comparison.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://brain.autoincomesys.com/blog/langmem-vs-agentbrain/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="LangMem vs AgentBrain: Per-Agent Memory vs a Shared Brain">
+  <meta property="og:description" content="LangMem gives a single LangGraph agent self-managed long-term memory. AgentBrain is a hosted shared brain multiple agents plug into via MCP, with discovery and marketplace. Full comparison.">
+  <meta property="og:url" content="https://brain.autoincomesys.com/blog/langmem-vs-agentbrain/">
+  <meta property="og:site_name" content="AgentBrain">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <meta property="og:image" content="https://brain.autoincomesys.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://brain.autoincomesys.com/og-image.png">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "LangMem vs AgentBrain: Per-Agent Memory vs a Shared Brain",
+  "description": "LangMem gives a single LangGraph agent self-managed long-term memory. AgentBrain is a hosted shared brain multiple agents plug into via MCP, with discovery and marketplace. Full comparison.",
+  "author": {
+    "@type": "Organization",
+    "name": "AgentBrain",
+    "url": "https://brain.autoincomesys.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "AgentBrain",
+    "url": "https://brain.autoincomesys.com"
+  },
+  "datePublished": "2026-08-17",
+  "dateModified": "2026-08-17",
+  "mainEntityOfPage": "https://brain.autoincomesys.com/blog/langmem-vs-agentbrain/",
+  "url": "https://brain.autoincomesys.com/blog/langmem-vs-agentbrain/",
+  "inLanguage": "en",
+  "keywords": "comparison, agent-memory, langmem, langchain, langgraph, mcp"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the difference between LangMem and AgentBrain?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "LangMem is a memory toolkit that gives a single LangGraph agent long-term memory it manages itself. AgentBrain is a hosted, multi-tenant shared brain that multiple agents connect to via MCP, with agent discovery and a marketplace."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does AgentBrain require LangChain?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. AgentBrain connects via the Model Context Protocol (MCP), so it works with any MCP-compatible client \u2014 Claude Desktop, Claude Code, Cursor, Windsurf, LangChain, or custom agents. No framework lock-in."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use LangMem and AgentBrain together?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. An agent can use LangMem for its own private memory and AgentBrain for shared, cross-agent context. They operate at different layers."
+      }
+    }
+  ]
+}
+  </script>
+  <style>
+    :root { --accent: #8b5cf6; --ink: #f8fafc; --muted: #94a3b8; --bg: #0f172a; --surface: #1e293b; --border: #334155; --maxw: 700px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.7; }
+    .container { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+    nav { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 16px 0; }
+    nav .container { display: flex; align-items: center; justify-content: space-between; }
+    nav a { color: var(--ink); text-decoration: none; }
+    nav .logo { font-weight: 700; }
+    article { padding: 60px 0; }
+    h1 { font-size: 2.25rem; margin-bottom: 16px; line-height: 1.2; }
+    h2 { font-size: 1.5rem; margin: 40px 0 16px; color: var(--accent); }
+    h3 { font-size: 1.2rem; margin: 24px 0 12px; }
+    p { color: var(--muted); margin-bottom: 20px; }
+    .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 32px; }
+    .tag { background: rgba(139,92,246,0.1); color: var(--accent); padding: 2px 10px; border-radius: 20px; margin-right: 12px; }
+    ul, ol { color: var(--muted); margin: 16px 0; padding-left: 24px; }
+    ul li, ol li { margin: 8px 0; }
+    code { background: var(--surface); padding: 2px 8px; border-radius: 4px; font-size: 0.9rem; color: var(--accent); }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; overflow-x: auto; margin: 16px 0; font-size: 0.85rem; }
+    blockquote { border-left: 4px solid var(--accent); padding-left: 20px; margin: 24px 0; color: var(--ink); font-style: italic; }
+    .cta { background: var(--surface); border: 1px solid var(--accent); border-radius: 12px; padding: 24px; margin: 32px 0; text-align: center; }
+    .cta a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    footer { border-top: 1px solid var(--border); padding: 40px 0; text-align: center; color: var(--muted); font-size: 0.85rem; }
+    footer a { color: var(--accent); }
+  </style>
+</head>
+<body>
+<nav>
+  <div class="container">
+    <a href="/" class="logo">🧠 AgentBrain</a>
+    <a href="/blog">← Back to Blog</a>
+  </div>
+</nav>
+<article>
+  <div class="container">
+    <h1>LangMem vs AgentBrain: Per-Agent Memory vs a Shared Brain</h1>
+    <div class="meta"><span class="tag">AgentBrain</span><span>2026-08-17</span></div>
+
+<p><strong>Short answer:</strong> LangMem is a memory toolkit from the LangChain ecosystem — it gives a <em>single</em> LangGraph agent long-term memory it manages itself. AgentBrain is a <em>shared</em>, hosted brain that <em>multiple</em> agents plug into via MCP, with agent discovery and a marketplace on top. One is a per-agent memory library; the other is multi-agent infrastructure.</p>
+
+<h2>What LangMem is</h2>
+<p>LangMem provides primitives for creating, consolidating, and retrieving long-term memories inside LangGraph agents. It handles memory types (semantic, episodic, procedural), background memory processing, and integration with LangGraph's store. It is a library you embed in your own agent code, and the memory it creates belongs to that one agent.</p>
+
+<h2>What AgentBrain is</h2>
+<p>AgentBrain is a hosted, multi-tenant context layer. Any MCP-compatible agent connects with one config block and an API key — no library to embed. Agents share a common pool of memory and knowledge, register themselves with capabilities, and discover other agents. The value grows with every connected agent.</p>
+
+<h2>Head-to-head</h2>
+<ul>
+  <li><strong>Scope:</strong> LangMem = memory for one agent. AgentBrain = shared context across many agents.</li>
+  <li><strong>Integration:</strong> LangMem requires LangGraph/LangChain code. AgentBrain works with any MCP client — Claude Desktop, Cursor, Windsurf, custom agents.</li>
+  <li><strong>Hosting:</strong> LangMem runs wherever your agent runs; you manage the store. AgentBrain is fully hosted.</li>
+  <li><strong>Discovery:</strong> LangMem has no agent registry. AgentBrain includes agent registration and discovery.</li>
+  <li><strong>Lock-in:</strong> LangMem ties you to the LangChain ecosystem. AgentBrain is protocol-level (MCP), so it's framework-agnostic.</li>
+</ul>
+
+<h2>When to use which</h2>
+<p>If you're building a single LangGraph agent and want fine-grained control over how it consolidates its own memories, LangMem is a good fit. If you have multiple agents — possibly across different frameworks or teams — that need to share what they learn, or you want agents to find and delegate to each other, AgentBrain is the right layer. The two can even coexist: an agent can use LangMem for private memory and AgentBrain for shared context.</p>
+
+<h2>Bottom line</h2>
+<p>LangMem makes one agent remember. AgentBrain makes many agents share a brain. For multi-agent systems, the shared layer is where the compounding value lives.</p>
+
+  </div>
+</article>
+<footer>
+  <div class="container">
+    <p>AgentBrain — The shared brain for AI agents. <a href="/">Learn more</a></p>
+  </div>
+</footer>
+</body>
+</html>

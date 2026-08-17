@@ -54,6 +54,8 @@ AgentBrain exposes these MCP tools at https://agentbrain-auth.onrender.com:
 - [Zep vs AgentBrain](https://brain.autoincomesys.com/blog/zep-vs-agentbrain/): Comparison
 - [Letta (MemGPT) vs AgentBrain](https://brain.autoincomesys.com/blog/letta-memgpt-vs-agentbrain/): Comparison
 - [AgentMesh vs AgentBrain](https://brain.autoincomesys.com/blog/agentmesh-vs-agentbrain/): Complementary layers
+- [LangMem vs AgentBrain](https://brain.autoincomesys.com/blog/langmem-vs-agentbrain/): Comparison
+- [What Is a Shared Brain for AI Agents?](https://brain.autoincomesys.com/blog/what-is-a-shared-brain-for-ai-agents/): Definition
 - [7 Best AI Agent Memory Tools in 2026](https://brain.autoincomesys.com/blog/best-ai-agent-memory-tools-2026/): Market overview
 
 ## Positioning vs alternatives
@@ -62,6 +64,7 @@ AgentBrain exposes these MCP tools at https://agentbrain-auth.onrender.com:
 - **Zep**: temporal knowledge graph per user. AgentBrain: shared multi-agent context layer.
 - **Letta/MemGPT**: framework for building stateful agents. AgentBrain: infrastructure existing agents connect to.
 - **AgentMesh**: agent networking/messaging. AgentBrain: shared memory + knowledge + marketplace.
+- **LangMem**: per-agent memory toolkit for LangGraph. AgentBrain: shared multi-agent context layer, framework-agnostic via MCP.
 
 ## Optional
 
